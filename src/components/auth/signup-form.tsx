@@ -44,15 +44,15 @@ export function SignupForm() {
   return (
     <form className="space-y-2" onSubmit={onSubmit}>
       <AuthField id="fullName" label="Full name" error={form.formState.errors.fullName?.message}>
-        <Input id="fullName" placeholder="Alex Carter" {...form.register("fullName")} />
+        <Input id="fullName" autoComplete="name" placeholder="Alex Carter" {...form.register("fullName")} />
       </AuthField>
 
       <AuthField id="email" label="Email" error={form.formState.errors.email?.message}>
-        <Input id="email" placeholder="owner@brewspace.com" {...form.register("email")} />
+        <Input id="email" type="email" autoComplete="email" placeholder="owner@brewspace.com" {...form.register("email")} />
       </AuthField>
 
       <AuthField id="password" label="Password" error={form.formState.errors.password?.message}>
-        <PasswordInput id="password" placeholder="Create password" {...form.register("password")} />
+        <PasswordInput id="password" autoComplete="new-password" placeholder="Create password" {...form.register("password")} />
       </AuthField>
 
       <AuthField
@@ -62,6 +62,7 @@ export function SignupForm() {
       >
         <PasswordInput
           id="confirmPassword"
+          autoComplete="new-password"
           placeholder="Confirm password"
           {...form.register("confirmPassword")}
         />

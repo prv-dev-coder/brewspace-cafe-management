@@ -11,13 +11,15 @@ import type { DashboardUser } from "@/components/dashboard/types"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import type { DashboardNotification } from "@/lib/dashboard/types"
 
 type DashboardShellProps = {
   user: DashboardUser
+  notifications: DashboardNotification[]
   children: React.ReactNode
 }
 
-export function DashboardShell({ user, children }: DashboardShellProps) {
+export function DashboardShell({ user, notifications, children }: DashboardShellProps) {
   const pathname = usePathname()
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -25,6 +27,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   useEffect(() => {
     const stored = window.localStorage.getItem("dashboard:sidebar-collapsed")
     if (stored) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSidebarCollapsed(stored === "1")
     }
   }, [])
@@ -34,6 +37,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
   }, [isSidebarCollapsed])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMobileOpen(false)
   }, [pathname])
 
@@ -91,7 +95,7 @@ export function DashboardShell({ user, children }: DashboardShellProps) {
         </Sheet>
 
         <div className="flex min-h-[calc(100vh-2rem)] min-w-0 flex-1 flex-col gap-3">
-          <Topbar user={user} onOpenMobileNav={() => setMobileOpen(true)} />
+          <Topbar user={user} notifications={notifications} onOpenMobileNav={() => setMobileOpen(true)} />
           <AnimatePresence mode="wait">
             <motion.main
               key={pathname}

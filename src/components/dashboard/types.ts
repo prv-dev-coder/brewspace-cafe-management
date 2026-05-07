@@ -4,6 +4,7 @@ export type DashboardUser = {
   name: string
   email: string
   role: "owner" | "manager" | "staff"
+  avatar_url?: string
 }
 
 export type NavItem = {

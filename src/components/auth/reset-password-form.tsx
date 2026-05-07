@@ -34,7 +34,7 @@ export function ResetPasswordForm() {
   return (
     <form className="space-y-2" onSubmit={onSubmit}>
       <AuthField id="password" label="New password" error={form.formState.errors.password?.message}>
-        <PasswordInput id="password" placeholder="Enter new password" {...form.register("password")} />
+        <PasswordInput id="password" autoComplete="new-password" placeholder="Enter new password" {...form.register("password")} />
       </AuthField>
 
       <AuthField
@@ -44,6 +44,7 @@ export function ResetPasswordForm() {
       >
         <PasswordInput
           id="confirmPassword"
+          autoComplete="new-password"
           placeholder="Confirm new password"
           {...form.register("confirmPassword")}
         />

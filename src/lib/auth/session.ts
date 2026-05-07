@@ -5,19 +5,32 @@ import { DEFAULT_POST_SIGNOUT_REDIRECT } from "@/lib/auth/config"
 
 export type AppRole = "owner" | "manager" | "staff"
 
-export const getServerSession = cache(async () => {
+/**
+ * Returns the currently authenticated user from the server.
+ * Uses getUser() (JWT-verified) instead of getSession() (not verified server-side).
+ * Wrapped in React cache() to deduplicate calls within a single request.
+ */
+export const getServerUser = cache(async () => {
   const supabase = await createServerSupabaseClient()
 
   const {
-    data: { session },
-  } = await supabase.auth.getSession()
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
-  return session
+  if (error || !user) return null
+
+  return user
 })
 
-export const getServerUser = cache(async () => {
-  const session = await getServerSession()
-  return session?.user ?? null
+/**
+ * @deprecated Use getServerUser() directly.
+ * Kept for backward-compat while migrating call-sites.
+ */
+export const getServerSession = cache(async () => {
+  const user = await getServerUser()
+  // Return a minimal session-like object so old callers don't break
+  return user ? { user } : null
 })
 
 export const requireUser = cache(async () => {

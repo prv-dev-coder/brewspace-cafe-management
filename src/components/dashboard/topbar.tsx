@@ -6,13 +6,15 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { NotificationsDropdown } from "@/components/dashboard/notifications-dropdown"
 import { ProfileDropdown } from "@/components/dashboard/profile-dropdown"
 import type { DashboardUser } from "@/components/dashboard/types"
+import type { DashboardNotification } from "@/lib/dashboard/types"
 
 type TopbarProps = {
   user: DashboardUser
+  notifications: DashboardNotification[]
   onOpenMobileNav: () => void
 }
 
-export function Topbar({ user, onOpenMobileNav }: TopbarProps) {
+export function Topbar({ user, notifications, onOpenMobileNav }: TopbarProps) {
   return (
     <header className="sticky top-3 z-30 flex h-14 items-center justify-between rounded-2xl border border-white/20 bg-white/65 px-3 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/45 sm:px-4">
       <div className="flex items-center gap-2">
@@ -32,7 +34,7 @@ export function Topbar({ user, onOpenMobileNav }: TopbarProps) {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <NotificationsDropdown />
+        <NotificationsDropdown notifications={notifications} />
         <ThemeToggle />
         <ProfileDropdown user={user} />
       </div>

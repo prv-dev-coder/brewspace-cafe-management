@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useMemo } from "react"
 import { toast } from "sonner"
+import Image from "next/image"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import {
@@ -51,7 +52,16 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
           variant="outline"
           className="h-10 gap-2 rounded-xl border-white/20 bg-white/70 px-2.5 hover:bg-white dark:border-white/10 dark:bg-white/10 dark:hover:bg-white/15"
         >
-          <Avatar className="size-7">
+          <Avatar className="size-7 relative overflow-hidden">
+            {user.avatar_url && (
+              <Image 
+                src={user.avatar_url} 
+                alt={user.name} 
+                fill 
+                sizes="28px"
+                className="object-cover" 
+              />
+            )}
             <AvatarFallback className="text-xs">{initials}</AvatarFallback>
           </Avatar>
           <div className="hidden text-left sm:block">

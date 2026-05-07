@@ -37,11 +37,11 @@ export function LoginForm() {
   return (
     <motion.form layout className="space-y-2" onSubmit={onSubmit}>
       <AuthField id="email" label="Email" error={form.formState.errors.email?.message}>
-        <Input id="email" placeholder="owner@brewspace.com" {...form.register("email")} />
+        <Input id="email" type="email" autoComplete="email" placeholder="owner@brewspace.com" {...form.register("email")} />
       </AuthField>
 
       <AuthField id="password" label="Password" error={form.formState.errors.password?.message}>
-        <PasswordInput id="password" placeholder="Enter your password" {...form.register("password")} />
+        <PasswordInput id="password" autoComplete="current-password" placeholder="Enter your password" {...form.register("password")} />
       </AuthField>
 
       <div className="flex justify-end">

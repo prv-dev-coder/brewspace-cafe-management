@@ -35,7 +35,7 @@ export function ForgotPasswordForm() {
   return (
     <form className="space-y-2" onSubmit={onSubmit}>
       <AuthField id="email" label="Email" error={form.formState.errors.email?.message}>
-        <Input id="email" placeholder="owner@brewspace.com" {...form.register("email")} />
+        <Input id="email" type="email" autoComplete="email" placeholder="owner@brewspace.com" {...form.register("email")} />
       </AuthField>
 
       <Button className="mt-2 w-full" disabled={form.formState.isSubmitting}>
