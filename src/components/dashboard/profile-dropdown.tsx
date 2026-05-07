@@ -2,7 +2,7 @@
 
 import { ChevronDown, LogOut, UserCircle2 } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useMemo } from "react"
 import { toast } from "sonner"
 import Image from "next/image"
@@ -44,6 +44,9 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
     router.refresh()
   }
 
+  const pathname = usePathname()
+  const settingsHref = pathname.startsWith("/portal") ? "/portal/settings" : "/dashboard/settings"
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -66,7 +69,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
           </Avatar>
           <div className="hidden text-left sm:block">
             <p className="text-xs font-medium leading-none">{user.name}</p>
-            <p className="text-[11px] text-muted-foreground">{user.role}</p>
+            <p className="text-[11px] text-muted-foreground text-capitalize">{user.role}</p>
           </div>
           <ChevronDown className="size-3.5 text-muted-foreground" />
         </Button>
@@ -78,7 +81,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
-          <Link href="/dashboard/settings">
+          <Link href={settingsHref}>
             <UserCircle2 className="size-4" />
             Profile settings
           </Link>

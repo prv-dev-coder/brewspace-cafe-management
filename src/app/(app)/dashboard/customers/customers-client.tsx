@@ -35,7 +35,13 @@ export function CustomersClient({ customers }: CustomersClientProps) {
     {
       header: "Joined",
       accessorKey: "created_at",
-      cell: (p: Profile) => format(new Date(p.created_at), "MMM d, yyyy")
+      cell: (p: Profile) => {
+        try {
+          return format(new Date(p.created_at), "MMM d, yyyy")
+        } catch {
+          return "N/A"
+        }
+      }
     },
     {
       header: "Status",
@@ -49,7 +55,11 @@ export function CustomersClient({ customers }: CustomersClientProps) {
     {
       header: "Total Orders",
       accessorKey: "id",
-      cell: () => <span className="font-medium">{Math.floor(Math.random() * 50) + 1}</span>
+      cell: (p: Profile) => {
+        // Use a deterministic value based on ID to avoid hydration mismatch
+        const orderCount = (p.id.charCodeAt(0) % 50) + 1
+        return <span className="font-medium">{orderCount}</span>
+      }
     }
   ]
 

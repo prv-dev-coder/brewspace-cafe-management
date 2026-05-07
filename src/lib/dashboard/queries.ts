@@ -215,17 +215,31 @@ export async function fetchDashboardAnalytics(): Promise<DashboardAnalyticsData>
   const supabase = await createServerSupabaseClient()
 
   let ordersRes, reservationsRes, inventoryRes, customersRes
+  const errors: string[] = []
 
   try {
-    [ordersRes, reservationsRes, inventoryRes, customersRes] = await Promise.all([
+    const results = await Promise.allSettled([
       supabase.from("orders").select("*"),
       supabase.from("reservations").select("*"),
       supabase.from("inventory").select("*"),
       supabase.from("profiles").select("*").eq("role", "customer"),
     ])
+
+    if (results[0].status === "fulfilled") ordersRes = results[0].value
+    else errors.push(`Orders: ${results[0].reason}`)
+
+    if (results[1].status === "fulfilled") reservationsRes = results[1].value
+    else errors.push(`Reservations: ${results[1].reason}`)
+
+    if (results[2].status === "fulfilled") inventoryRes = results[2].value
+    else errors.push(`Inventory: ${results[2].reason}`)
+
+    if (results[3].status === "fulfilled") customersRes = results[3].value
+    else errors.push(`Customers: ${results[3].reason}`)
+
   } catch (err) {
     console.error("Dashboard analytics fetch completely failed", err)
-    ordersRes = reservationsRes = inventoryRes = customersRes = { data: [] }
+    errors.push("General connection error")
   }
 
   const orders = ordersRes?.data || []
@@ -415,8 +429,20 @@ export async function fetchDashboardAnalytics(): Promise<DashboardAnalyticsData>
     customerGrowth,
     reservationBreakdown,
     popularMenuItems: [],
-    errors: [],
+    errors,
   }
+}
+
+export async function fetchProfile(id: string) {
+  const supabase = await createServerSupabaseClient()
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", id)
+    .single()
+
+  if (error) return null
+  return data as Profile
 }
 
 // ========================================

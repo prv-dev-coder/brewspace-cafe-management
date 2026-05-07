@@ -215,15 +215,33 @@ export async function updateProfile(
 
   if (!user) return { success: false, error: "Not authenticated" }
 
-  const { error } = await supabase
+  // 1. Update profiles table
+  const { error: profileError } = await supabase
     .from("profiles")
     .update({ ...parsed.data, updated_at: new Date().toISOString() })
     .eq("id", user.id)
 
-  if (error) return { success: false, error: error.message }
+  if (profileError) return { success: false, error: profileError.message }
 
+  // 2. Sync with Auth metadata so navbar/session sees the change immediately
+  const { error: authError } = await supabase.auth.updateUser({
+    data: {
+      full_name: parsed.data.full_name,
+      avatar_url: parsed.data.avatar_url,
+    },
+  })
+
+  if (authError) {
+    console.warn("Auth metadata sync failed:", authError.message)
+    // We don't fail the whole action if only auth sync fails, as DB is the source of truth
+  }
+
+  // 3. Revalidate multiple paths to ensure stale data is cleared
   revalidatePath("/", "layout")
-  return { success: true }
+  revalidatePath("/portal", "layout")
+  revalidatePath("/dashboard", "layout")
+
+  return { success: true, message: "Profile updated successfully" }
 }
 
 // ─── Image Upload ─────────────────────────────────────────────────────────────

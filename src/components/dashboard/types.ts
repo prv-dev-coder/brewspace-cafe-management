@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react"
 export type DashboardUser = {
   name: string
   email: string
-  role: "owner" | "manager" | "staff"
+  role: "owner" | "manager" | "staff" | "customer"
   avatar_url?: string
 }
 

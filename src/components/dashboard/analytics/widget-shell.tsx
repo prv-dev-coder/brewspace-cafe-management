@@ -13,7 +13,7 @@ export function WidgetShell({ title, description, action, children, className }:
   return (
     <section
       className={cn(
-        "rounded-2xl border border-white/25 bg-white/70 p-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/45",
+        "rounded-2xl border border-white/25 bg-white/70 p-4 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-zinc-900/45 overflow-hidden min-w-0",
         className
       )}
     >

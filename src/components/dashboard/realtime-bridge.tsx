@@ -19,6 +19,7 @@ export function DashboardRealtimeBridge() {
       .channel("dashboard-live-updates")
       .on("postgres_changes", { event: "*", schema: "public", table: "orders" }, scheduleRefresh)
       .on("postgres_changes", { event: "*", schema: "public", table: "notifications" }, scheduleRefresh)
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, scheduleRefresh)
       .subscribe()
 
     return () => {

@@ -14,12 +14,12 @@ import {
   LineChart,
   Pie,
   PieChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts"
 import { WidgetShell } from "@/components/dashboard/analytics/widget-shell"
+import { ChartContainer } from "@/components/dashboard/analytics/chart-container"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import type { DashboardAnalyticsData } from "@/lib/dashboard/types"
@@ -34,26 +34,28 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
   const { resolvedTheme } = useTheme()
   const axisColor = resolvedTheme === "dark" ? "#a1a1aa" : "#52525b"
   const gridColor = resolvedTheme === "dark" ? "rgba(255,255,255,0.09)" : "rgba(0,0,0,0.09)"
+  
   const tooltipStyle =
     resolvedTheme === "dark"
-      ? { backgroundColor: "rgba(24,24,27,0.95)", border: "1px solid rgba(255,255,255,0.1)" }
-      : { backgroundColor: "rgba(255,255,255,0.95)", border: "1px solid rgba(0,0,0,0.09)" }
-  const hasOrdersData = data.ordersByDay.some((point) => point.orders > 0)
-  const hasRevenueData = data.monthlyRevenue.some((point) => point.revenue > 0)
-  const hasCustomerData = data.customerGrowth.some((point) => point.customers > 0)
-  const hasMenuData = data.popularMenuItems.length > 0
-  const hasReservationData = data.reservationBreakdown.some((point) => point.value > 0)
+      ? { backgroundColor: "rgba(24,24,27,0.95)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px" }
+      : { backgroundColor: "rgba(255,255,255,0.95)", border: "1px solid rgba(0,0,0,0.09)", borderRadius: "12px" }
+
+  const hasOrdersData = (data.ordersByDay?.length ?? 0) > 0 && data.ordersByDay.some((point) => point.orders > 0)
+  const hasRevenueData = (data.monthlyRevenue?.length ?? 0) > 0 && data.monthlyRevenue.some((point) => point.revenue > 0)
+  const hasCustomerData = (data.customerGrowth?.length ?? 0) > 0 && data.customerGrowth.some((point) => point.customers > 0)
+  const hasMenuData = (data.popularMenuItems?.length ?? 0) > 0
+  const hasReservationData = (data.reservationBreakdown?.length ?? 0) > 0 && data.reservationBreakdown.some((point) => point.value > 0)
 
   return (
     <div className="space-y-5">
-      {data.errors.length > 0 && (
+      {data.errors?.length > 0 && (
         <div className="rounded-2xl border border-amber-500/35 bg-amber-500/10 p-3 text-xs text-amber-800 dark:text-amber-200">
           Some analytics sources are temporarily unavailable: {data.errors.join(" | ")}
         </div>
       )}
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        {data.revenueCards.map((card, index) => (
+        {data.revenueCards?.map((card, index) => (
           <motion.article
             key={card.title}
             initial={{ opacity: 0, y: 8 }}
@@ -85,9 +87,9 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
             </span>
           }
         >
-          <div className="h-72">
+          <div className="h-72 w-full min-w-0">
             {hasRevenueData ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ChartContainer height="100%">
                 <AreaChart data={data.monthlyRevenue}>
                   <defs>
                     <linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1">
@@ -110,9 +112,9 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
                       return [`$${n.toLocaleString()}`, "Revenue"]
                     }}
                   />
-                  <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2.2} fill="url(#revenueFill)" />
+                  <Area type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2.2} fill="url(#revenueFill)" animationDuration={1000} />
                 </AreaChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             ) : (
               <div className="flex h-full items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
                 No revenue data yet
@@ -122,9 +124,9 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
         </WidgetShell>
 
         <WidgetShell title="Reservation Analytics" description="Current reservation quality mix" className="xl:col-span-5">
-          <div className="h-72">
+          <div className="h-72 w-full min-w-0">
             {hasReservationData ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ChartContainer height="100%">
                 <PieChart>
                   <Pie
                     data={data.reservationBreakdown}
@@ -133,8 +135,9 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
                     innerRadius={66}
                     outerRadius={94}
                     paddingAngle={4}
+                    animationDuration={1000}
                   >
-                    {data.reservationBreakdown.map((entry, index) => (
+                    {data.reservationBreakdown?.map((entry, index) => (
                       <Cell key={entry.name} fill={reservationColors[index % reservationColors.length]} />
                     ))}
                   </Pie>
@@ -146,7 +149,7 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
                     }}
                   />
                 </PieChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             ) : (
               <div className="flex h-full items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
                 No reservation analytics yet
@@ -154,7 +157,7 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
             )}
           </div>
           <div className="mt-1 grid grid-cols-3 gap-2 text-xs">
-            {data.reservationBreakdown.map((item, index) => (
+            {data.reservationBreakdown?.map((item, index) => (
               <div key={item.name} className="rounded-xl bg-background/70 p-2 dark:bg-black/20">
                 <div className="flex items-center gap-1.5">
                   <span
@@ -177,17 +180,17 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
           className="xl:col-span-5"
           action={<ShoppingBag className="size-4 text-muted-foreground" />}
         >
-          <div className="h-64">
+          <div className="h-64 w-full min-w-0">
             {hasOrdersData ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ChartContainer height="100%">
                 <BarChart data={data.ordersByDay}>
                   <CartesianGrid vertical={false} stroke={gridColor} />
                   <XAxis dataKey="day" tick={{ fill: axisColor, fontSize: 12 }} tickLine={false} axisLine={false} />
                   <YAxis tick={{ fill: axisColor, fontSize: 12 }} tickLine={false} axisLine={false} />
                   <Tooltip contentStyle={tooltipStyle} />
-                  <Bar dataKey="orders" radius={[10, 10, 0, 0]} fill="#8b5cf6" />
+                  <Bar dataKey="orders" radius={[10, 10, 0, 0]} fill="#8b5cf6" animationDuration={1000} />
                 </BarChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             ) : (
               <div className="flex h-full items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
                 No orders yet
@@ -202,9 +205,9 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
           className="xl:col-span-4"
           action={<Users className="size-4 text-muted-foreground" />}
         >
-          <div className="h-64">
+          <div className="h-64 w-full min-w-0">
             {hasCustomerData ? (
-              <ResponsiveContainer width="100%" height="100%">
+              <ChartContainer height="100%">
                 <LineChart data={data.customerGrowth}>
                   <CartesianGrid vertical={false} stroke={gridColor} />
                   <XAxis dataKey="month" tick={{ fill: axisColor, fontSize: 12 }} tickLine={false} axisLine={false} />
@@ -217,9 +220,10 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
                     strokeWidth={2.5}
                     dot={{ r: 3, fill: "#22c55e" }}
                     activeDot={{ r: 5 }}
+                    animationDuration={1000}
                   />
                 </LineChart>
-              </ResponsiveContainer>
+              </ChartContainer>
             ) : (
               <div className="flex h-full items-center justify-center rounded-xl border border-dashed text-sm text-muted-foreground">
                 No customer growth data yet
@@ -236,7 +240,7 @@ export function AnalyticsOverview({ data }: AnalyticsOverviewProps) {
         >
           {hasMenuData ? (
             <div className="space-y-3">
-              {data.popularMenuItems.map((item) => (
+              {data.popularMenuItems?.map((item) => (
                 <div key={item.name} className="space-y-1.5">
                   <div className="flex items-center justify-between text-xs">
                     <p className="font-medium">{item.name}</p>
